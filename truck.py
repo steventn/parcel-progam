@@ -12,4 +12,5 @@ class Truck:
 
 
     def __str__(self):
-        return f"{self.location}, {self.departed_time}, {self.current_time}"
+        return f"{self.location}, {self.departed_time}, {self.current_time}, {self.total_distance}, {self.packages}, " \
+               f"{self.capacity}, {self.speed}, {self.load}, {self.mileage}"

@@ -14,4 +14,4 @@ class Package:
 
     def __str__(self):
         return f"{self.package_id}, {self.address}, {self.city}, {self.zip_code}, {self.delivery_deadline}, " \
-               f"{self.mass}, {self.special_notes}, {self.delivery_status} "
+               f"{self.mass}, {self.special_notes}, {self.delivery_status}"
