@@ -53,8 +53,44 @@ def main():
     package_info = hash_table.HashMap(40)
     create_package_hash()
 
-    packages = [package_info.get("1"), package_info.get("2"), package_info.get("3")]
-    new_truck = truck.Truck("", "", "", packages, "", "", "", "")
+    truck_one_packages = [package_info.get("13"), package_info.get("14"), package_info.get("15"), package_info.get("16"), package_info.get("19"), package_info.get("20")]
+    truck_two_packages = [package_info.get("3"), package_info.get("18"), package_info.get("36"), package_info.get("38")]
+    new_truck = truck.Truck("", "", "", truck_one_packages, "", "", "", "")
+
+    def deliver_packages(truck):
+        # List of packages to be sorted using the nearest neighbor algorithm
+        undelivered_packages = []
+        # Takes all packages from the truck and places it in the undelivered_package list to be sorted
+        # O(n) operation
+        for id in truck.packages:
+            package = package_info.get(id)
+            undelivered_packages.append(package)
+
+        # Clears out the Truck's packages property
+        truck.packages.clear()
+        amount_of_undelivered_packages = len(undelivered_packages)
+
+        # Loops until all undelivered_packages are sorted
+        while amount_of_undelivered_packages > 0:
+            next_address_distance = 100
+            next_package = None
+
+            for package in undelivered_packages:
+                truck_address_index = get_address_index(truck.location)
+                package_address_index = get_address_index(package.location)
+                distance_between = get_distance_between_addresses(truck_address_index, package_address_index)
+                if distance_between <= next_address_distance:
+                    next_address_distance = distance_between
+                    next_package = package
+
+            truck.packages.append(next_package.ID)
+            undelivered_packages.remove(next_package)
+            truck.mileage += next_address_distance
+            truck.address = next_package.address
+            truck.add_truck_time(next_address_distance)
+            next_package.delivery_time = truck.current_time
+            next_package.departure_time = truck.departed_time
+
 
     package_one = new_truck.packages[0].address
     package_two = new_truck.packages[1].address
