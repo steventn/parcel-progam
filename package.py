@@ -1,6 +1,7 @@
 import csv
 import hash_table
 
+
 class Package:
     def __init__(self, package_id, address, city, zip_code, delivery_deadline, mass, special_notes, delivery_status,
                  departure_time, delivery_time):

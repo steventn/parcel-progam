@@ -100,6 +100,9 @@ def main():
             next_package.departure_time = truck.departed_time
             print(truck.current_time)
 
+    print(deliver_packages(new_truck))
+    print(package_info_hash.get("13"))
+
 
 def start_program():
     print("╔═════════════════════════════════════════════╗")
@@ -109,7 +112,18 @@ def start_program():
     print("║                                             ║")
     print("╚═════════════════════════════════════════════╝")
 
+    options = ["Check status of One Package", "Check status of All Packages", "Option 3"]
+
+    print("Please select an option:")
+    for index, option in enumerate(options, start=1):
+        print(f"{index}. {option}")
+
+    selected_option = input("Enter the number corresponding to your choice: ")
+
+    if selected_option == "1" or selected_option == "2":
+        time = input("Enter a time with format (HH:MM:SS) :")
+
 
 if __name__ == "__main__":
+    # start_program()
     main()
-
