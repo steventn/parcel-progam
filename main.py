@@ -33,11 +33,15 @@ def main():
         return hub_distances
 
     def create_package_hash():
+        package_info = hash_table.HashMap(40)
+
         with open(PACKAGE_PATH, 'r') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
-                new_package = package.Package(row[0], row[1], row[2], row[3], row[4], row[5], row[6], "At hub", "", "")
+                new_package = package.Package(row[0], row[1], row[2], row[4], row[5], row[6], row[7], "At hub", "", "")
                 package_info.put(row[0], new_package)
+
+        return package_info
 
     def get_address_index(address):
         hub_addresses = create_address_list()
@@ -52,13 +56,13 @@ def main():
             exact_distance = hub_distances[address_y][address_x]
         return float(exact_distance)
 
-    package_info = hash_table.HashMap(40)
-    create_package_hash()
+    package_info_hash = create_package_hash()
 
-    truck_one_packages = [package_info.get("13"), package_info.get("14"), package_info.get("15"), package_info.get("16"), package_info.get("19"), package_info.get("20")]
-    truck_two_packages = [package_info.get("3"), package_info.get("18"), package_info.get("36"), package_info.get("38")]
+
+    truck_one_packages = [package_info_hash.get("13"), package_info_hash.get("14"), package_info_hash.get("15"), package_info_hash.get("16"), package_info_hash.get("19"), package_info_hash.get("20")]
+    truck_two_packages = [package_info_hash.get("3"), package_info_hash.get("18"), package_info_hash.get("36"), package_info_hash.get("38")]
     start_time = datetime.timedelta(hours=9)
-    new_truck = truck.Truck("", start_time, "", truck_one_packages, "", "", 0.0)
+    new_truck = truck.Truck("", start_time, "", truck_one_packages, "", 0.0, 0.0)
 
     def deliver_packages(truck):
         # List of packages to be sorted using the nearest neighbor algorithm
@@ -67,6 +71,7 @@ def main():
         # O(n) operation
         for package in truck.packages:
             undelivered_packages.append(package)
+            truck.load += float(package.mass)
 
         # Clears out the Truck's packages property
         truck.packages.clear()
@@ -96,8 +101,13 @@ def main():
             print(truck.current_time)
 
 
-    print(deliver_packages(new_truck))
-
+def start_program():
+    print("╔═════════════════════════════════════════════╗")
+    print("║                    WGUPS                    ║")
+    print("║                                             ║")
+    print("║ Western Governors University Parcel Service ║")
+    print("║                                             ║")
+    print("╚═════════════════════════════════════════════╝")
 
 
 if __name__ == "__main__":
