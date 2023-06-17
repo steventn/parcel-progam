@@ -1,5 +1,6 @@
 import datetime
 
+
 class Truck:
     def __init__(self, location, current_time, departed_time, packages, capacity, load, mileage):
         self.location = location
@@ -11,7 +12,6 @@ class Truck:
         self.speed = 18
         self.load = load
         self.mileage = mileage
-
 
     def __str__(self):
         return f"{self.location}, {self.departed_time}, {self.current_time}, {self.total_distance}, {self.packages}, " \

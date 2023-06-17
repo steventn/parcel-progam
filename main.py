@@ -3,12 +3,14 @@ import hash_table
 import package
 import truck
 import datetime
+from dateutil.parser import parse
+
 
 PACKAGE_PATH = 'resources/WGUPS Package File.csv'
 DISTANCE_PATH = 'resources/WGUPS Distance Table.csv'
 
 
-def main():
+def main_logic():
     def create_address_list():
         with open(DISTANCE_PATH, 'r') as file:
             reader = csv.reader(file)
@@ -38,7 +40,7 @@ def main():
         with open(PACKAGE_PATH, 'r') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
-                new_package = package.Package(row[0], row[1], row[2], row[4], row[5], row[6], row[7], "At hub", "", "")
+                new_package = package.Package(row[0], row[1], row[2], row[4], row[5], row[6], row[7], "At hub", None)
                 package_info.put(row[0], new_package)
 
         return package_info
@@ -57,19 +59,23 @@ def main():
         return float(exact_distance)
 
     package_info_hash = create_package_hash()
+    truck_one_package_ids = ["13", "14", "15", "16", "19", "20", "29", "30", "40", "5", "7", "8", "9", "10", "11", "12"]
+    truck_two_package_ids = ["3", "36", "38", "1", "31", "34", "37", "2", "4", "17", "18", "21", "22", "23", "24"]
+    truck_three_package_ids = ["6", "9", "25", "28", "32", "26", "27", "33", "39"]
 
+    start_time = datetime.timedelta(hours=8)
 
-    truck_one_packages = [package_info_hash.get("13"), package_info_hash.get("14"), package_info_hash.get("15"), package_info_hash.get("16"), package_info_hash.get("19"), package_info_hash.get("20")]
-    truck_two_packages = [package_info_hash.get("3"), package_info_hash.get("18"), package_info_hash.get("36"), package_info_hash.get("38")]
-    start_time = datetime.timedelta(hours=9)
-    new_truck = truck.Truck("", start_time, "", truck_one_packages, "", 0.0, 0.0)
+    truck_one = truck.Truck("", start_time, "", truck_one_package_ids, "", 0.0, 0.0)
+    truck_two = truck.Truck("", start_time, "", truck_two_package_ids, "", 0.0, 0.0)
+    truck_three = truck.Truck("", None, "", truck_three_package_ids, "", 0.0, 0.0)
 
     def deliver_packages(truck):
         # List of packages to be sorted using the nearest neighbor algorithm
         undelivered_packages = []
         # Takes all packages from the truck and places it in the undelivered_package list to be sorted
         # O(n) operation
-        for package in truck.packages:
+        for package_id in truck.packages:
+            package = package_info_hash.get(package_id)
             undelivered_packages.append(package)
             truck.load += float(package.mass)
 
@@ -97,11 +103,35 @@ def main():
             truck.location = next_package.address
             truck.add_truck_time(next_address_distance)
             next_package.delivery_time = truck.current_time
-            next_package.departure_time = truck.departed_time
-            print(truck.current_time)
 
-    print(deliver_packages(new_truck))
-    print(package_info_hash.get("13"))
+    deliver_packages(truck_one)
+    deliver_packages(truck_two)
+    truck_three_start_time = min(truck_one.current_time, truck_two.current_time)
+    truck_three.current_time = truck_three_start_time
+    deliver_packages(truck_three)
+    total_mileage = truck_one.mileage + truck_two.mileage + truck_three.mileage
+    print(total_mileage)
+
+    def check_packages(truck):
+        for package in truck.packages:
+            content = package_info_hash.get(package)
+            if content.delivery_deadline != "EOD":
+                time_obj = parse(content.delivery_deadline)
+                time_components = time_obj.time()
+                timedelta_obj = datetime.timedelta(hours=time_components.hour, minutes=time_components.minute,
+                                          seconds=time_components.second)
+                if timedelta_obj >= content.delivery_time:
+                    print("Pass")
+                else:
+                    print("Fail")
+                    print(content)
+
+    print("--Truck1--")
+    check_packages(truck_one)
+    print("--Truck2--")
+    check_packages(truck_two)
+    print("--Truck3--")
+    check_packages(truck_three)
 
 
 def start_program():
@@ -126,4 +156,4 @@ def start_program():
 
 if __name__ == "__main__":
     # start_program()
-    main()
+    main_logic()
