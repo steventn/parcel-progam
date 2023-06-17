@@ -14,6 +14,7 @@ class Package:
         self.special_notes = special_notes
         self.delivery_status = delivery_status
         self.delivery_time = delivery_time
+        self.departed_time = None
 
     def __str__(self):
         return f"{self.package_id}, {self.address}, {self.city}, {self.zip_code}, {self.delivery_deadline}, " \

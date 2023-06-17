@@ -30,3 +30,10 @@ class HashMap:
             if existing_key == key:
                 del bucket[i]
                 return
+
+    def keys(self):
+        keys_list = []
+        for bucket in self.map:
+            for key, _ in bucket:
+                keys_list.append(key)
+        return keys_list
