@@ -1,3 +1,5 @@
+# Steven Nguyen, ID #010596963
+
 import csv
 from datetime import datetime, time
 from hash_table import HashMap
@@ -10,6 +12,8 @@ DISTANCE_PATH = 'resources/WGUPS Distance Table.csv'
 
 
 # Creates a new list with just address information
+# Time complexity: O(N)
+# Space complexity: O(1)
 def create_address_list(distance_data):
     for row in distance_data:
         if row and row[0] == "DISTANCE BETWEEN HUBS IN MILES":
@@ -17,6 +21,8 @@ def create_address_list(distance_data):
 
 
 # Creates a new list with just distance between addresses information
+# Time complexity: O(N)
+# Space complexity: O(N)
 def create_distance_list(distance_data):
     hub_distances = []
 
@@ -27,6 +33,8 @@ def create_distance_list(distance_data):
 
 
 # Creates a hash map with package ID as the key and the package object as the value
+# Time complexity: O(N)
+# Space complexity: O(N)
 def create_package_hash(package_data):
     package_info = HashMap(40)
     for row in package_data:
@@ -36,6 +44,8 @@ def create_package_hash(package_data):
 
 
 # Returns the index of an address in the address list
+# Time complexity: O(N)
+# Space complexity: O(1)
 def get_address_index(address, hub_addresses):
     for index, hub_address in enumerate(hub_addresses):
         if address in hub_address:
@@ -43,6 +53,8 @@ def get_address_index(address, hub_addresses):
 
 
 # Returns the distance of two address indexes
+# Time complexity: O(1)
+# Space complexity: O(1)
 def get_distance_between_addresses(address_x, address_y, hub_distances):
     exact_distance = hub_distances[address_x][address_y]
     if exact_distance == "":
@@ -51,11 +63,12 @@ def get_distance_between_addresses(address_x, address_y, hub_distances):
 
 
 # List of packages to be sorted using the nearest neighbor algorithm
-# Algorithm is an O(N^2) operation
+# Time complexity: O(N^2)
+# Space complexity: O(N)
 def deliver_packages(truck, package_info, hub_addresses, hub_distances):
     undelivered_packages = []
     # Takes all packages from the truck and places it in the undelivered_package list to be sorted
-    # O(n) operation
+    # Time complexity: O(N^2)
     for package_id in truck.packages:
         package = package_info.get(package_id)
         package.departed_time = truck.departed_time
@@ -67,11 +80,13 @@ def deliver_packages(truck, package_info, hub_addresses, hub_distances):
     amount_of_undelivered_packages = len(undelivered_packages)
 
     # Loops until all undelivered_packages are sorted
+    # Time complexity: O(N)
     while amount_of_undelivered_packages > 0:
         # Set an initial high address distance
         next_address_distance = 100
         next_package = None
 
+        # Time complexity: O(N)
         for package in undelivered_packages:
             truck_address_index = get_address_index(truck.location, hub_addresses)
             package_address_index = get_address_index(package.address, hub_addresses)
@@ -90,6 +105,8 @@ def deliver_packages(truck, package_info, hub_addresses, hub_distances):
 
 
 # Create logic to assign package state, depending on delivery_time, user input time, and departed_time
+# Time complexity: O(1)
+# Space complexity: O(1)
 def update_delivery_status(package, input_time):
     if package.delivery_time is not None and package.delivery_time <= input_time < package.departed_time:
         package.delivery_status = "Delivered"
@@ -99,6 +116,9 @@ def update_delivery_status(package, input_time):
         package.delivery_status = "At Hub"
 
 
+# Logic to create address and distance lists, load trucks, and deliver packages
+# Time complexity: O(N)
+# Space complexity: O(N)
 def main_logic():
     with open(DISTANCE_PATH, 'r') as file:
         reader = csv.reader(file)
