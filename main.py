@@ -71,6 +71,9 @@ def deliver_packages(truck, package_info, hub_addresses, hub_distances):
     # Time complexity: O(N^2)
     for package_id in truck.packages:
         package = package_info.get(package_id)
+        if package_id == "9":
+            package.address = "410 S State St"
+            package.zip_code = "84111"
         package.departed_time = truck.departed_time
         undelivered_packages.append(package)
         truck.load += float(package.mass)
@@ -108,12 +111,12 @@ def deliver_packages(truck, package_info, hub_addresses, hub_distances):
 # Time complexity: O(1)
 # Space complexity: O(1)
 def update_delivery_status(package, input_time):
-    if package.delivery_time is not None and package.delivery_time <= input_time < package.departed_time:
-        package.delivery_status = "Delivered"
-    elif package.delivery_time > input_time and package.delivery_time > package.departed_time:
-        package.delivery_status = "In Route"
-    else:
+    if package.departed_time > input_time:
         package.delivery_status = "At Hub"
+    elif package.delivery_time <= input_time and package.delivery_time >= package.departed_time:
+        package.delivery_status = "Delivered"
+    elif package.departed_time < input_time:
+        package.delivery_status = "In Route"
 
 
 # Logic to create address and distance lists, load trucks, and deliver packages
@@ -136,29 +139,34 @@ def main_logic():
     package_info_hash = create_package_hash(package_data)
 
     # Manually loading all packages for each truck
-    truck_one_package_ids = ["13", "14", "15", "16", "19", "20", "29", "30", "40", "5", "7", "8", "9", "10", "11", "12"]
-    truck_two_package_ids = ["3", "36", "38", "1", "31", "34", "37", "2", "4", "17", "18", "21", "22", "23", "24", "35"]
-    truck_three_package_ids = ["6", "9", "25", "28", "32", "26", "27", "33", "39"]
+    truck_one_package_ids = ["13", "14", "15", "16", "19", "20", "1", "40", "4", "21", "5", "37", "34", "33", "30", "29"]
+    truck_two_package_ids = ["3", "38", "36", "18", "9", "26", "24", "33", "39", "35"]
+    truck_three_package_ids = ["6", "32", "25", "28", "31", "12", "17", "22", "2", "7", "8", "9", "10", "11", "27", "23"]
 
     current_date = datetime.now().date()
-    time_object = time(8, 0, 0)
+    time_object_one = time(8, 0, 0)
+    time_object_two = time(10, 20, 0)
+    time_object_three = time(9, 5, 0)
 
-    start_time = datetime.combine(current_date, time_object)
+    start_time_one = datetime.combine(current_date, time_object_one)
+    start_time_two = datetime.combine(current_date, time_object_two)
+    start_time_three = datetime.combine(current_date, time_object_three)
 
     # Create all truck objects
-    truck_one = Truck(start_time, None, truck_one_package_ids, 0.0, 0.0)
-    truck_two = Truck(start_time, None, truck_two_package_ids, 0.0, 0.0)
-    truck_three = Truck(None, None, truck_three_package_ids, 0.0, 0.0)
+    truck_one = Truck(start_time_one, None, truck_one_package_ids, 0.0, 0.0)
+    truck_two = Truck(start_time_two, None, truck_two_package_ids, 0.0, 0.0)
+    truck_three = Truck(start_time_three, None, truck_three_package_ids, 0.0, 0.0)
 
-    truck_one.departed_time = start_time
-    truck_two.departed_time = start_time
+    truck_one.departed_time = start_time_one
+    truck_two.departed_time = start_time_two
+    truck_three.departed_time = start_time_three
 
+    # Deliver packages on each truck
     deliver_packages(truck_one, package_info_hash, hub_addresses, hub_distances)
-    deliver_packages(truck_two, package_info_hash, hub_addresses, hub_distances)
-    truck_three_start_time = min(truck_one.current_time, truck_two.current_time)
-    truck_three.current_time = truck_three_start_time
-    truck_three.departed_time = truck_three_start_time
     deliver_packages(truck_three, package_info_hash, hub_addresses, hub_distances)
+    truck_two.current_time = start_time_two
+    truck_two.departed_time = start_time_two
+    deliver_packages(truck_two, package_info_hash, hub_addresses, hub_distances)
 
     total_mileage = truck_one.mileage + truck_two.mileage + truck_three.mileage
 
@@ -167,8 +175,10 @@ def main_logic():
         print("║                    WGUPS                    ║")
         print("║                                             ║")
         print("║ Western Governors University Parcel Service ║")
-        print("║                                             ║")
         print("╚═════════════════════════════════════════════╝")
+        print(f"Truck 1: {truck_one_package_ids}"
+              f"\nTruck 2: {truck_two_package_ids}"
+              f"\nTruck 3: {truck_three_package_ids}\n")
 
         options = ["Check status of One Package", "Check status of All Packages", "Print All Package status and total milage"]
 
@@ -182,7 +192,7 @@ def main_logic():
             input_time = input("Enter a time with format (HH:MM:SS): ")
             hour, minute, second = map(int, input_time.split(":"))
 
-            match_date = start_time.date()
+            match_date = start_time_one.date()
             input_time_object = time(hour, minute, second)
 
             datetime_time = datetime.combine(match_date, input_time_object)
@@ -205,7 +215,7 @@ def main_logic():
             print("╚═════════════════════════════════════════════╝")
             for key in package_info_hash.keys():
                 package_info = package_info_hash.get(key)
-                update_delivery_status(package_info, truck_three.current_time)
+                update_delivery_status(package_info, truck_two.current_time)
                 print(f"[Package {key}]: {package_info}")
 
     start_program()

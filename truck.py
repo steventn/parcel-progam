@@ -6,7 +6,6 @@ class Truck:
         self.location = "4001 South 700 East"
         self.departed_time = departed_time
         self.current_time = current_time
-        self.total_distance = 0
         self.packages = packages
         self.capacity = 16
         self.speed = 18
@@ -14,7 +13,7 @@ class Truck:
         self.mileage = mileage
 
     def __str__(self):
-        return f"{self.location}, {self.departed_time}, {self.current_time}, {self.total_distance}, {self.packages}, " \
+        return f"{self.location}, {self.departed_time}, {self.current_time}, {self.packages}, " \
                f"{self.capacity}, {self.speed}, {self.load}, {self.mileage}"
 
     def add_truck_time(self, miles):
